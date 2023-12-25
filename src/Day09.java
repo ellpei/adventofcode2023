@@ -7,23 +7,21 @@ public class Day09 {
 
     public static void main(String[] args) {
         List<String> inputs = ElfHelper.readInputLines(fileName);
-        System.out.println("ANSWER PART 1: " + sumExtrapolatedValues(inputs));
+        System.out.println("ANSWER PART 1: " + sumForwardExtrapolatedValues(inputs));
+        System.out.println("ANSWER PART 2: " + sumBackwardExtrapolatedValues(inputs));
     }
 
-    private static Long getLast(List<Long> list) {
-        return list.get(list.size()-1);
-    }
-
-    private static Long sumExtrapolatedValues(List<String> input) {
+    // Part 1
+    private static Long sumForwardExtrapolatedValues(List<String> input) {
         long sum = 0;
         for (String line : input) {
             ArrayList<Long> numbers = new ArrayList<>(parseNumbers(line));
-            sum += getNextSequence(numbers);
+            sum += getLastInSequence(numbers);
         }
         return sum;
     }
 
-    private static Long getNextSequence(List<Long> numbers) {
+    private static Long getLastInSequence(List<Long> numbers) {
         if (numbers.stream().allMatch(n -> n == 0)) {
             return 0L;
         }
@@ -31,7 +29,32 @@ public class Day09 {
         for (int i = 0; i < numbers.size()-1; i++) {
             res.add(numbers.get(i+1) - numbers.get(i));
         }
-        return getLast(numbers) + getNextSequence(res);
+        return getLast(numbers) + getLastInSequence(res);
+    }
+
+    private static Long getLast(List<Long> list) {
+        return list.get(list.size()-1);
+    }
+
+    // Part 2
+    private static Long sumBackwardExtrapolatedValues(List<String> input) {
+        long sum = 0;
+        for (String line : input) {
+            ArrayList<Long> numbers = new ArrayList<>(parseNumbers(line));
+            sum += getFirstInSequence(numbers);
+        }
+        return sum;
+    }
+
+    private static Long getFirstInSequence(List<Long> numbers) {
+        if (numbers.stream().allMatch(n -> n == 0)) {
+            return 0L;
+        }
+        ArrayList<Long> res = new ArrayList<>();
+        for (int i = 0; i < numbers.size()-1; i++) {
+            res.add(numbers.get(i+1) - numbers.get(i));
+        }
+        return numbers.get(0) - getFirstInSequence(res);
     }
 
     private static List<Long> parseNumbers(String line) {
@@ -40,5 +63,4 @@ public class Day09 {
                .map(Long::parseLong)
                .toList();
     }
-
 }
